@@ -274,20 +274,41 @@ namespace OpenGLEs2Tutorial
 
         public void TranslateSprite()
         {
-            vertices = new float[]
+            /*vertices = new float[]
             {
                 rect.Left, rect.Top, 0.0f,
                 rect.Left, rect.Bottom, 0.0f,
                 rect.Right, rect.Bottom, 0.0f,
                 rect.Right, rect.Top, 0.0f,
-            };
+            };*/
+            vertices[0] = rect.Left;
+            vertices[1] = rect.Top;
+            vertices[2] = 0.0f;
 
+            vertices[3] = rect.Left;
+            vertices[4] = rect.Bottom;
+            vertices[5] = 0.0f;
+
+            vertices[6] = rect.Right;
+            vertices[7] = rect.Bottom;
+            vertices[8] = 0.0f;
+
+            vertices[9] = rect.Right;
+            vertices[10] = rect.Top;
+            vertices[11] = 0.0f;
+
+
+            vertexBuffer.Clear();
+            vertexBuffer.Put(vertices);
+            vertexBuffer.Position(0);
+
+            /*
             // The vertex buffer.
             ByteBuffer byteBuffer = ByteBuffer.AllocateDirect(vertices.Length * 4);
             byteBuffer.Order(ByteOrder.NativeOrder());
             vertexBuffer = byteBuffer.AsFloatBuffer();
             vertexBuffer.Put(vertices);
-            vertexBuffer.Position(0);
+            vertexBuffer.Position(0);*/
         }
 
         private void SetupImage()
