@@ -156,14 +156,15 @@ namespace OpenGLEs2Tutorial
 
         public void SetupTriangle()
         {
-            // We have create the vertices of our view.
+            // We have to create the vertices.
             vertices = new float[]
                        {10.0f, 200f, 0.0f,
-                    10.0f, 100f, 0.0f,
-                    100f, 100f, 0.0f,
+                        10.0f, 100f, 0.0f,
+                        100f, 100f, 0.0f,
+                        100f, 200f, 0.0f,
                        };
 
-            indices = new short[] { 0, 1, 2 }; // loop in the android official tutorial opengles why different order.
+            indices = new short[] { 0, 1, 2, 0, 2, 3 }; // The order of vertexrendering.
 
             // The vertex buffer.
             ByteBuffer byteBuffer = ByteBuffer.AllocateDirect(vertices.Length * 4);
