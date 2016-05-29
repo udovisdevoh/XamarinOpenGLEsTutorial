@@ -14,6 +14,7 @@ using static Android.Opengl.GLSurfaceView;
 using Javax.Microedition.Khronos.Egl;
 using Javax.Microedition.Khronos.Opengles;
 using Java.Nio;
+using Android.Graphics;
 
 namespace OpenGLEs2Tutorial
 {
@@ -30,9 +31,13 @@ namespace OpenGLEs2Tutorial
 
         public static short[] indices;
 
+        public static float[] uvs;
+
         public FloatBuffer vertexBuffer;
 
         public ShortBuffer drawListBuffer;
+
+        public FloatBuffer uvBuffer;
 
         private float screenWidth = 1280;
 
@@ -42,7 +47,7 @@ namespace OpenGLEs2Tutorial
 
         private long lastTime;
 
-        private int program;
+        //private int program;
         #endregion
 
         #region Constructors
@@ -82,7 +87,7 @@ namespace OpenGLEs2Tutorial
             GLES20.GlClear(GLES20.GlColorBufferBit | GLES20.GlDepthBufferBit);
 
             // get handle to vertex shader's vPosition member
-            int positionHandle = GLES20.GlGetAttribLocation(ShaderHelper.SpSolidColor, "vPosition");
+            int positionHandle = GLES20.GlGetAttribLocation(ShaderHelper.SpImage, "vPosition");
 
             // Enable generic vertex attribute array
             GLES20.GlEnableVertexAttribArray(positionHandle);
@@ -92,11 +97,26 @@ namespace OpenGLEs2Tutorial
                                          GLES20.GlFloat, false,
                                          0, vertexBuffer);
 
+            // Get handle to texture coordinates location
+            int textureCoordinatesLocation = GLES20.GlGetAttribLocation(ShaderHelper.SpImage, "a_texCoord");
+
+            // Enable generic vertex attribute array
+            GLES20.GlEnableVertexAttribArray(textureCoordinatesLocation);
+
+            // Prepare the texturecoordinates
+            GLES20.GlVertexAttribPointer(textureCoordinatesLocation, 2, GLES20.GlFloat, false, 0, uvBuffer);
+
             // Get handle to shape's transformation matrix
-            int matrixhandle = GLES20.GlGetUniformLocation(ShaderHelper.SpSolidColor, "uMVPMatrix");
+            int matrixhandle = GLES20.GlGetUniformLocation(ShaderHelper.SpImage, "uMVPMatrix");
 
             // Apply the projection and view transformation
             GLES20.GlUniformMatrix4fv(matrixhandle, 1, false, matrix, 0);
+
+            // Get handle to textures locations
+            int samplerLocation = GLES20.GlGetUniformLocation(ShaderHelper.SpImage, "s_texture");
+
+            // Set the sampler texture unit to 0, where we have saved the texture.
+            GLES20.GlUniform1i(samplerLocation, 0);
 
             // Draw the triangle
             GLES20.GlDrawElements(GLES20.GlTriangleStrip, indices.Length,
@@ -104,6 +124,7 @@ namespace OpenGLEs2Tutorial
 
             // Disable vertex array
             GLES20.GlDisableVertexAttribArray(positionHandle);
+            GLES20.GlDisableVertexAttribArray(textureCoordinatesLocation);
         }
 
         public void OnSurfaceChanged(IGL10 unused, int width, int height)
@@ -124,13 +145,13 @@ namespace OpenGLEs2Tutorial
             }
 
             // Setup our screen width and height for normal sprite translation.
-            Matrix.OrthoM(matrixProjection, 0, 0f, screenWidth, 0.0f, screenHeight, 0, 50);
+            Android.Opengl.Matrix.OrthoM(matrixProjection, 0, 0f, screenWidth, 0.0f, screenHeight, 0, 50);
 
             // Set the camera position (View matrix)
-            Matrix.SetLookAtM(matrixView, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+            Android.Opengl.Matrix.SetLookAtM(matrixView, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
             // Calculate the projection and view transformation
-            Matrix.MultiplyMM(matrixProjectionAndView, 0, matrixProjection, 0, matrixView, 0);
+            Android.Opengl.Matrix.MultiplyMM(matrixProjectionAndView, 0, matrixProjection, 0, matrixView, 0);
         }
 
         public void OnSurfaceCreated(IGL10 gl, Javax.Microedition.Khronos.Egl.EGLConfig config)
@@ -138,10 +159,15 @@ namespace OpenGLEs2Tutorial
             // Create the triangle
             SetupTriangle();
 
+            // Create the image information
+            SetupImage();
+
             // Set the clear color to black
             GLES20.GlClearColor(0.0f, 0.0f, 0.0f, 1);
 
-            // Create the shaders
+            #region Solid colors mode
+            /*
+            // Create the shaders, solid color
             int vertexShader = ShaderHelper.LoadShader(GLES20.GlVertexShader, ShaderHelper.VsSolidColor);
             int fragmentShader = ShaderHelper.LoadShader(GLES20.GlFragmentShader, ShaderHelper.FsSolidColor);
 
@@ -152,9 +178,25 @@ namespace OpenGLEs2Tutorial
 
             // Set our shader programm
             GLES20.GlUseProgram(ShaderHelper.SpSolidColor);
+            */
+            #endregion
+
+            #region Texture mode
+            // Create the shaders, images
+            int vertexShader = ShaderHelper.LoadShader(GLES20.GlVertexShader, ShaderHelper.VsImage);
+            int fragmentShader = ShaderHelper.LoadShader(GLES20.GlFragmentShader, ShaderHelper.FsImage);
+
+            ShaderHelper.SpImage = GLES20.GlCreateProgram();
+            GLES20.GlAttachShader(ShaderHelper.SpImage, vertexShader);
+            GLES20.GlAttachShader(ShaderHelper.SpImage, fragmentShader);
+            GLES20.GlLinkProgram(ShaderHelper.SpImage);
+
+            // Set our shader programm
+            GLES20.GlUseProgram(ShaderHelper.SpImage);
+            #endregion
         }
 
-        public void SetupTriangle()
+        private void SetupTriangle()
         {
             // We have to create the vertices.
             vertices = new float[]
@@ -181,6 +223,50 @@ namespace OpenGLEs2Tutorial
             drawListBuffer.Put(indices);
             drawListBuffer.Position(0);
 
+        }
+
+        private void SetupImage()
+        {
+            // Create our UV coordinates.
+            uvs = new float[] {
+                0.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f,
+                1.0f, 0.0f
+            };
+
+            // The texture buffer
+            ByteBuffer byteBuffer = ByteBuffer.AllocateDirect(uvs.Length * 4);
+            byteBuffer.Order(ByteOrder.NativeOrder());
+            uvBuffer = byteBuffer.AsFloatBuffer();
+            uvBuffer.Put(uvs);
+            uvBuffer.Position(0);
+
+            // Generate Textures, if more needed, alter these numbers.
+            int[] textureIds = new int[1];
+            GLES20.GlGenTextures(1, textureIds, 0);
+
+            // Retrieve our image from resources.
+            Bitmap bitmap = BitmapFactory.DecodeResource(context.Resources, Resource.Drawable.otter);
+
+            // Bind texture to texturename
+            GLES20.GlActiveTexture(GLES20.GlTexture0);
+            GLES20.GlBindTexture(GLES20.GlTexture2d, textureIds[0]);
+
+            // Set filtering
+            GLES20.GlTexParameteri(GLES20.GlTexture2d, GLES20.GlTextureMinFilter, GLES20.GlLinear);
+            GLES20.GlTexParameteri(GLES20.GlTexture2d, GLES20.GlTextureMagFilter, GLES20.GlLinear);
+
+            // Set wrapping mode
+            GLES20.GlTexParameteri(GLES20.GlTexture2d, GLES20.GlTextureWrapS, GLES20.GlClampToEdge);
+            GLES20.GlTexParameteri(GLES20.GlTexture2d, GLES20.GlTextureWrapT, GLES20.GlClampToEdge);
+
+            // Load the bitmap into the bound texture.
+            GLUtils.TexImage2D(GLES20.GlTexture2d, 0, bitmap, 0);
+
+            // We are done using the bitmap so we should recycle it.
+            bitmap.Recycle();
+            bitmap.Dispose();
         }
 
         internal void OnPause()
