@@ -99,7 +99,7 @@ namespace OpenGLEs2Tutorial
             GLES20.GlUniformMatrix4fv(matrixhandle, 1, false, matrix, 0);
 
             // Draw the triangle
-            GLES20.GlDrawElements(GLES20.GlTriangles, indices.Length,
+            GLES20.GlDrawElements(GLES20.GlTriangleStrip, indices.Length,
                     GLES20.GlUnsignedShort, drawListBuffer);
 
             // Disable vertex array
@@ -158,13 +158,14 @@ namespace OpenGLEs2Tutorial
         {
             // We have to create the vertices.
             vertices = new float[]
-                       {10.0f, 200f, 0.0f,
-                        10.0f, 100f, 0.0f,
-                        100f, 100f, 0.0f,
-                        100f, 200f, 0.0f,
-                       };
+            {
+                10.0f, 100f, 0.0f,
+                100f, 100f, 0.0f,
+                10.0f, 200f, 0.0f,
+                100f, 200f, 0.0f,
+            };
 
-            indices = new short[] { 0, 1, 2, 0, 2, 3 }; // The order of vertexrendering.
+            indices = new short[] { 0, 1, 2, 3 }; // The order of vertexrendering.
 
             // The vertex buffer.
             ByteBuffer byteBuffer = ByteBuffer.AllocateDirect(vertices.Length * 4);
