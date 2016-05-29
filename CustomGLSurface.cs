@@ -32,6 +32,11 @@ namespace OpenGLEs2Tutorial
             // Render the view only when there is a change in the drawing data
             RenderMode = Rendermode.Continuously;
         }
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            renderer.ProcessTouchEvent(e);
+            return true;
+        }
 
         public override void OnPause()
         {

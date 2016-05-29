@@ -47,6 +47,8 @@ namespace OpenGLEs2Tutorial
 
         private long lastTime;
 
+        private RectF rect;
+
         //private int program;
         #endregion
 
@@ -79,6 +81,37 @@ namespace OpenGLEs2Tutorial
 
             // Save the current time to see how long it took
             lastTime = now;
+        }
+
+        internal void ProcessTouchEvent(MotionEvent motionEvent)
+        {
+            // Get the half of screen value
+            int screenHalfX = (int)(screenWidth / 2);
+            int screenHalfY = (int)(screenHeight / 2);
+            if (motionEvent.GetX() < screenHalfX)
+            {
+                rect.Left -= 10;
+                rect.Right -= 10;
+            }
+            else
+            {
+                rect.Left += 10;
+                rect.Right += 10;
+            }
+
+            if (motionEvent.GetY() < screenHalfY)
+            {
+                rect.Bottom += 10;
+                rect.Top += 10;
+            }
+            else
+            {
+                rect.Bottom -= 10;
+                rect.Top -= 10;
+            }
+
+            // Update the new data.
+            TranslateSprite();
         }
 
         private void Render(float[] matrix)
@@ -198,14 +231,28 @@ namespace OpenGLEs2Tutorial
 
         private void SetupTriangle()
         {
+            rect = new RectF(10, 200, 100, 10);
+            /*rect.Left = 10;
+            rect.Right = 100;
+            rect.Bottom = 100;
+            rect.Top = 200;*/
+
             // We have to create the vertices.
-            vertices = new float[]
+            /*vertices = new float[]
             {
                 10.0f, 200f, 0.0f,
                 10.0f, 100f, 0.0f,
                 100f, 100f, 0.0f,
                 100f, 200f, 0.0f,
+            };*/
+            vertices = new float[]
+            {
+                rect.Left, rect.Top, 0.0f,
+                rect.Left, rect.Bottom, 0.0f,
+                rect.Right, rect.Bottom, 0.0f,
+                rect.Right, rect.Top, 0.0f,
             };
+
 
             indices = new short[] { 0, 1, 2, 0, 2, 3 }; // The order of vertexrendering.
 
@@ -223,6 +270,24 @@ namespace OpenGLEs2Tutorial
             drawListBuffer.Put(indices);
             drawListBuffer.Position(0);
 
+        }
+
+        public void TranslateSprite()
+        {
+            vertices = new float[]
+            {
+                rect.Left, rect.Top, 0.0f,
+                rect.Left, rect.Bottom, 0.0f,
+                rect.Right, rect.Bottom, 0.0f,
+                rect.Right, rect.Top, 0.0f,
+            };
+
+            // The vertex buffer.
+            ByteBuffer byteBuffer = ByteBuffer.AllocateDirect(vertices.Length * 4);
+            byteBuffer.Order(ByteOrder.NativeOrder());
+            vertexBuffer = byteBuffer.AsFloatBuffer();
+            vertexBuffer.Put(vertices);
+            vertexBuffer.Position(0);
         }
 
         private void SetupImage()
