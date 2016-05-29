@@ -20,6 +20,7 @@ namespace OpenGLEs2Tutorial
 
         public static int SpImage;
 
+        /*
         /// <summary>
         /// SHADER Solid
         /// This shader is for rendering a colored primitive.
@@ -35,7 +36,7 @@ namespace OpenGLEs2Tutorial
             "precision mediump float;" +
             "void main() {" +
             "  gl_FragColor = vec4(0.5,0,0,1);" +
-            "}";
+            "}";*/
 
         /// <summary>
         /// SHADER Image
