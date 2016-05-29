@@ -195,8 +195,11 @@ namespace OpenGLEs2Tutorial
             // Create the image information
             SetupImage();
 
-            // Set the clear color to black
-            GLES20.GlClearColor(0.0f, 0.0f, 0.0f, 1);
+            // Set the clear color to yellow
+            GLES20.GlClearColor(1.0f, 1.0f, 0f, 1);
+
+            GLES20.GlEnable(GLES20.GlBlend);
+            GLES20.GlBlendFunc(GLES20.GlOne, GLES20.GlOneMinusSrcAlpha);
 
             #region Solid colors mode
             /*
@@ -333,7 +336,7 @@ namespace OpenGLEs2Tutorial
             GLES20.GlGenTextures(1, textureIds, 0);
 
             // Retrieve our image from resources.
-            Bitmap bitmap = BitmapFactory.DecodeResource(context.Resources, Resource.Drawable.otter);
+            Bitmap bitmap = BitmapFactory.DecodeResource(context.Resources, Resource.Drawable.plant07);
 
             // Bind texture to texturename
             GLES20.GlActiveTexture(GLES20.GlTexture0);

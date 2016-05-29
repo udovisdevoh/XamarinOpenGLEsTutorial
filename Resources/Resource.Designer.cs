@@ -50,6 +50,9 @@ namespace OpenGLEs2Tutorial
 			// aapt resource value: 0x7f020001
 			public const int otter = 2130837505;
 			
+			// aapt resource value: 0x7f020002
+			public const int plant07 = 2130837506;
+			
 			static Drawable()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
