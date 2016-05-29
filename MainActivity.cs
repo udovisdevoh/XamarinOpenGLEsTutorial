@@ -21,7 +21,7 @@ namespace OpenGLEs2Tutorial
             // Turn off the window's title bar
             RequestWindowFeature(WindowFeatures.NoTitle);
 
-            // Super
+            // Base
             base.OnCreate(bundle);
 
             // Fullscreen mode

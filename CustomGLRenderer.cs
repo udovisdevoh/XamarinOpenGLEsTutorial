@@ -82,7 +82,7 @@ namespace OpenGLEs2Tutorial
             GLES20.GlClear(GLES20.GlColorBufferBit | GLES20.GlDepthBufferBit);
 
             // get handle to vertex shader's vPosition member
-            int positionHandle = GLES20.GlGetAttribLocation(RiGraphicTools.SpSolidColor, "vPosition");
+            int positionHandle = GLES20.GlGetAttribLocation(ShaderHelper.SpSolidColor, "vPosition");
 
             // Enable generic vertex attribute array
             GLES20.GlEnableVertexAttribArray(positionHandle);
@@ -93,7 +93,7 @@ namespace OpenGLEs2Tutorial
                                          0, vertexBuffer);
 
             // Get handle to shape's transformation matrix
-            int matrixhandle = GLES20.GlGetUniformLocation(RiGraphicTools.SpSolidColor, "uMVPMatrix");
+            int matrixhandle = GLES20.GlGetUniformLocation(ShaderHelper.SpSolidColor, "uMVPMatrix");
 
             // Apply the projection and view transformation
             GLES20.GlUniformMatrix4fv(matrixhandle, 1, false, matrix, 0);
@@ -142,16 +142,16 @@ namespace OpenGLEs2Tutorial
             GLES20.GlClearColor(0.0f, 0.0f, 0.0f, 1);
 
             // Create the shaders
-            int vertexShader = RiGraphicTools.LoadShader(GLES20.GlVertexShader, RiGraphicTools.VsSolidColor);
-            int fragmentShader = RiGraphicTools.LoadShader(GLES20.GlFragmentShader, RiGraphicTools.FsSolidColor);
+            int vertexShader = ShaderHelper.LoadShader(GLES20.GlVertexShader, ShaderHelper.VsSolidColor);
+            int fragmentShader = ShaderHelper.LoadShader(GLES20.GlFragmentShader, ShaderHelper.FsSolidColor);
 
-            RiGraphicTools.SpSolidColor = GLES20.GlCreateProgram();             // create empty OpenGL ES Program
-            GLES20.GlAttachShader(RiGraphicTools.SpSolidColor, vertexShader);   // add the vertex shader to program
-            GLES20.GlAttachShader(RiGraphicTools.SpSolidColor, fragmentShader); // add the fragment shader to program
-            GLES20.GlLinkProgram(RiGraphicTools.SpSolidColor);                  // creates OpenGL ES program executables
+            ShaderHelper.SpSolidColor = GLES20.GlCreateProgram();             // create empty OpenGL ES Program
+            GLES20.GlAttachShader(ShaderHelper.SpSolidColor, vertexShader);   // add the vertex shader to program
+            GLES20.GlAttachShader(ShaderHelper.SpSolidColor, fragmentShader); // add the fragment shader to program
+            GLES20.GlLinkProgram(ShaderHelper.SpSolidColor);                  // creates OpenGL ES program executables
 
             // Set our shader programm
-            GLES20.GlUseProgram(RiGraphicTools.SpSolidColor);
+            GLES20.GlUseProgram(ShaderHelper.SpSolidColor);
         }
 
         public void SetupTriangle()
@@ -166,16 +166,16 @@ namespace OpenGLEs2Tutorial
             indices = new short[] { 0, 1, 2 }; // loop in the android official tutorial opengles why different order.
 
             // The vertex buffer.
-            ByteBuffer bb = ByteBuffer.AllocateDirect(vertices.Length * 4);
-            bb.Order(ByteOrder.NativeOrder());
-            vertexBuffer = bb.AsFloatBuffer();
+            ByteBuffer byteBuffer = ByteBuffer.AllocateDirect(vertices.Length * 4);
+            byteBuffer.Order(ByteOrder.NativeOrder());
+            vertexBuffer = byteBuffer.AsFloatBuffer();
             vertexBuffer.Put(vertices);
             vertexBuffer.Position(0);
 
             // initialize byte buffer for the draw list
-            ByteBuffer dlb = ByteBuffer.AllocateDirect(indices.Length * 2);
-            dlb.Order(ByteOrder.NativeOrder());
-            drawListBuffer = dlb.AsShortBuffer();
+            ByteBuffer byteBuffer2 = ByteBuffer.AllocateDirect(indices.Length * 2);
+            byteBuffer2.Order(ByteOrder.NativeOrder());
+            drawListBuffer = byteBuffer2.AsShortBuffer();
             drawListBuffer.Put(indices);
             drawListBuffer.Position(0);
 

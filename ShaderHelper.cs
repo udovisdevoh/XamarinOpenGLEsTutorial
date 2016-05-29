@@ -13,7 +13,7 @@ using Android.Opengl;
 
 namespace OpenGLEs2Tutorial
 {
-    public static class RiGraphicTools
+    public static class ShaderHelper
     {
         // Program variables
         public static int SpSolidColor;
